@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Argent — suivi financier</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17202a;background:#f5f7fa;line-height:1.45}*{box-sizing:border-box}body{margin:0;padding:2rem 1rem}main{max-width:1100px;margin:auto}h1{margin:.2rem 0 .35rem;font-size:clamp(2rem,5vw,3.3rem);letter-spacing:-.04em}h2{margin:.2rem 0 1rem;font-size:1.1rem}p{margin:.3rem 0}.intro{color:#667085;margin-bottom:1.5rem}.carte{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:1.25rem;margin:1rem 0;box-shadow:0 12px 30px #17202a0d}.barre{display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap}.statut{font-size:.85rem;padding:.4rem .7rem;border-radius:999px;background:#fff3cd;color:#7a5c00}.statut.ok{background:#dcfce7;color:#166534}.statut.erreur{background:#fee2e2;color:#991b1b}.formulaire-saisie,.form-livret{display:flex;gap:1rem;align-items:end;flex-wrap:wrap}.champ{display:grid;gap:.35rem;min-width:150px;flex:1}label{font-size:.84rem;font-weight:700;color:#52606d}input,select,button{font:inherit;min-height:42px;border:1px solid #d0d5dd;border-radius:10px;padding:.55rem .7rem}button{border:0;background:#2457d6;color:#fff;font-weight:700;cursor:pointer;padding-inline:1rem}button:hover{filter:brightness(.94)}button:disabled{opacity:.55;cursor:not-allowed}.tableau-conteneur{overflow:auto;margin-top:1rem}table{width:100%;min-width:850px;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid #e5e7eb;border-radius:12px}th,td{padding:.7rem .55rem;text-align:center;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;white-space:nowrap}tr>*:last-child{border-right:0}tfoot tr>*{border-bottom:0}thead{background:#172b4d;color:#fff}tbody th{text-align:left}.depenses{background:#fff1f2}.revenus{background:#ecfdf3}tfoot{background:#fff8dc;font-weight:800}.cartes-livrets{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}.livret{padding:1rem;border:1px solid #e5e7eb;border-radius:14px;background:linear-gradient(135deg,#f8fafc,#eef4ff)}.solde{font-size:1.7rem;font-weight:800;color:#2457d6}.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}.aide{font-size:.83rem;color:#667085;margin-top:1rem}.aide code{background:#f1f3f5;padding:.1rem .25rem;border-radius:4px}@media(max-width:540px){body{padding:1rem}.carte{padding:1rem}.formulaire-saisie,.form-livret{display:grid;grid-template-columns:1fr}.champ{min-width:0}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Argent</h1>
+    <p class="intro">Suivi des revenus, dépenses et livrets.</p>
+  </header>
+
+  <section class="carte">
+    <div class="barre"><h2>Compte courant</h2><span id="statut" class="statut">Mode local</span></div>
+    <form id="formulaire-saisie" class="formulaire-saisie">
+      <div class="champ"><label for="type">Type</label><select id="type" required><option value="depenses">Dépense</option><option value="revenus">Revenu</option></select></div>
+      <div class="champ"><label for="mois">Mois</label><select id="mois" required></select></div>
+      <div class="champ"><label for="montant">Montant (€)</label><input id="montant" type="number" min="0" step="0.01" placeholder="25,50" required></div>
+      <button type="submit">Enregistrer</button>
+    </form>
+    <div class="tableau-conteneur"><table aria-label="Résumé annuel"><thead><tr id="entete-mois"><th></th></tr></thead><tbody><tr class="depenses"><th scope="row">Dépenses</th></tr><tr class="revenus"><th scope="row">Revenus</th></tr></tbody><tfoot><tr><th scope="row">Solde</th></tr></tfoot></table></div>
+  </section>
+
+  <section class="carte"><h2>Livrets</h2><div class="cartes-livrets"><article class="livret"><h3>Livret Bleu</h3><p id="solde-bleu" class="solde">0,00 €</p></article><article class="livret"><h3>Livret Jeune</h3><p id="solde-jeune" class="solde">0,00 €</p></article></div></section>
+
+  <section class="actions"><form id="formulaire-livret" class="carte form-livret"><h2>Ajouter de l’argent</h2><div class="champ"><label for="livret-ajout">Livret</label><select id="livret-ajout"><option value="bleu">Livret Bleu</option><option value="jeune">Livret Jeune</option></select></div><div class="champ"><label for="montant-ajout">Montant (€)</label><input id="montant-ajout" type="number" min="0" step="0.01" required></div><button type="submit">Ajouter</button></form><form id="formulaire-retrait" class="carte form-livret"><h2>Retirer de l’argent</h2><div class="champ"><label for="livret-retrait">Livret</label><select id="livret-retrait"><option value="bleu">Livret Bleu</option><option value="jeune">Livret Jeune</option></select></div><div class="champ"><label for="montant-retrait">Montant (€)</label><input id="montant-retrait" type="number" min="0" step="0.01" required></div><button type="submit">Retirer</button></form></section>
+  <p class="aide">Firebase est facultatif dans ce modèle : sans configuration, les données restent dans le navigateur. Pour activer Firestore, remplacez les valeurs dans le bloc de configuration et activez l’authentification anonyme.</p>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // Remplacez uniquement ces valeurs par celles de votre projet Firebase.
+  // Ne mettez jamais de clé privée ou de fichier de service dans ce HTML.
+  const firebaseConfig = {
+    apiKey: "AIzaSyD64tEfdSqLkVCxaPyE1XgvKmRrbr2uQmA",
+    authDomain: "argent-47cbf.firebaseapp.com",
+    projectId: "argent-47cbf",
+    storageBucket: "argent-47cbf.firebasestorage.app",
+    messagingSenderId: "674822328053",
+    appId: "1:674822328053:web:2ea5371da7189a1c293fbc"
+  };
+  const firebaseActive = Object.values(firebaseConfig).every(v => v && !String(v).startsWith("VOTRE_"));
+  const mois = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+  const euros = new Intl.NumberFormat("fr-FR", { style:"currency", currency:"EUR" });
+  const vide = () => ({ depenses:Array(12).fill(0), revenus:Array(12).fill(0), livrets:{ bleu:0, jeune:0 } });
+  let donnees = vide();
+  let sauvegardeDistante = null;
+  const statut = document.querySelector("#statut");
+  const localKey = "argent-tableau-v2";
+  const setStatus = (text, cls = "") => { statut.textContent = text; statut.className = `statut ${cls}`; };
+  const normaliser = (d) => ({ depenses:Array.from({length:12},(_,i)=>Number(d?.depenses?.[i])||0), revenus:Array.from({length:12},(_,i)=>Number(d?.revenus?.[i])||0), livrets:{bleu:Number(d?.livrets?.bleu)||0, jeune:Number(d?.livrets?.jeune)||0} });
+
+  const entete = document.querySelector("#entete-mois");
+  const lignes = { depenses:document.querySelector(".depenses"), revenus:document.querySelector(".revenus") };
+  const total = document.querySelector("tfoot tr");
+  mois.forEach((nom, i) => { [entete, lignes.depenses, lignes.revenus, total].forEach((row) => { const cell=document.createElement(i===0 && row===entete ? "th":"td"); if(row===entete) cell.textContent=nom; else if(row!==total) cell.dataset.mois=i; row.append(cell); }); });
+  const totalHead = document.createElement("th"); totalHead.textContent="Total"; entete.append(totalHead); [lignes.depenses,lignes.revenus,total].forEach(row=>{const cell=document.createElement("td");cell.dataset.total="true";row.append(cell)});
+  mois.forEach((nom,i)=>{const option=document.createElement("option");option.value=i;option.textContent=nom;document.querySelector("#mois").append(option)});
+
+  function render(){
+    ["depenses","revenus"].forEach(type=>{ let somme=0; [...lignes[type].querySelectorAll("td[data-mois]")].forEach((cell,i)=>{const value=donnees[type][i]; somme+=value; cell.textContent=euros.format(value)}); lignes[type].querySelector("td[data-total]").textContent=euros.format(somme); });
+    let solde=0; [...total.querySelectorAll("td[data-mois]")].forEach((cell,i)=>{const value=donnees.revenus[i]-donnees.depenses[i];solde+=value;cell.textContent=euros.format(value)}); total.querySelector("td[data-total]").textContent=euros.format(solde);
+    document.querySelector("#solde-bleu").textContent=euros.format(donnees.livrets.bleu); document.querySelector("#solde-jeune").textContent=euros.format(donnees.livrets.jeune);
+  }
+  function localSave(){ localStorage.setItem(localKey, JSON.stringify(donnees)); }
+  async function save(){ localSave(); if(sauvegardeDistante) await setDoc(sauvegardeDistante, donnees, { merge:true }); }
+  function apply(d){ donnees=normaliser(d); render(); }
+
+  document.querySelector("#formulaire-saisie").addEventListener("submit", async (event)=>{ event.preventDefault(); const type=document.querySelector("#type").value, i=Number(document.querySelector("#mois").value), value=Number(document.querySelector("#montant").value); if(!Number.isFinite(value)||value<0)return; donnees[type][i]+=value; await save(); event.target.reset(); render(); });
+  async function mouvement(event, direction){ event.preventDefault(); const form=event.currentTarget, livret=form.querySelector("select").value, value=Number(form.querySelector("input").value); if(!Number.isFinite(value)||value<=0)return; if(direction<0 && donnees.livrets[livret]<value){ alert("Solde insuffisant."); return; } donnees.livrets[livret]+=direction*value; await save(); form.reset(); render(); }
+  document.querySelector("#formulaire-livret").addEventListener("submit", e=>mouvement(e,1)); document.querySelector("#formulaire-retrait").addEventListener("submit", e=>mouvement(e,-1));
+
+  const localData = localStorage.getItem(localKey); if(localData){ try{apply(JSON.parse(localData))}catch{apply(vide())} } else render();
+  if(firebaseActive){
+    try{
+      const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
+      onAuthStateChanged(auth, user=>{ if(!user)return; sauvegardeDistante=doc(db,"users",user.uid,"finance","data"); onSnapshot(sauvegardeDistante, snap=>{ if(snap.exists())apply(snap.data()); setStatus("Synchronisé avec Firebase","ok"); }, ()=>setStatus("Erreur de lecture Firebase","erreur")); });
+      await signInAnonymously(auth);
+    }catch(error){ console.error(error); setStatus("Firebase indisponible — mode local","erreur"); }
+  }
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
